@@ -7,4 +7,7 @@
     <string name="receive">Receive</string>
     <string name="message_hint">Message</string>
     <string name="topic_hint">Topic</string>
+    <string name="send_hello">Send Hello</string>
+    <string name="send_bye">Send Bye</string>
+    <string name="message_sent">Message sent!</string>
 </resources>

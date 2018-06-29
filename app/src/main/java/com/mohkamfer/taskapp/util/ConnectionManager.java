@@ -14,6 +14,7 @@ import com.mohkamfer.taskapp.R;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -62,7 +63,6 @@ public class ConnectionManager {
     }
 
     private void handleConnectivity() {
-        System.out.println("Received something!");
         if (online())
             connectClient();
         else
@@ -151,13 +151,12 @@ public class ConnectionManager {
             disconToken.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    System.out.println("Disconnected");
+                    System.out.println("MQTT Client Disconnected");
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken,
                                       Throwable exception) {
-                    System.out.println("Disconnection failed xDDD");
                 }
             });
 
@@ -176,7 +175,17 @@ public class ConnectionManager {
         try {
             encodedPayload = payload.getBytes("UTF-8");
             MqttMessage message = new MqttMessage(encodedPayload);
-            client.publish(topic, message);
+            IMqttDeliveryToken deliveryToken = client.publish(topic, message);
+            deliveryToken.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    ((MainActivity) context).updateSendStatus();
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }

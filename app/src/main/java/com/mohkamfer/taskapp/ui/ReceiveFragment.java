@@ -13,7 +13,7 @@ public class ReceiveFragment extends Fragment {
 
     public ReceiveFragment() {}
 
-    public static Fragment newInstance() {
+    public static ReceiveFragment newInstance() {
         return new ReceiveFragment();
     }
 

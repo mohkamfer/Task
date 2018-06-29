@@ -23,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
 
     private ConnectionManager mManager;
 
+    private SendFragment mSendFragment;
+    private ReceiveFragment mReceiveFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        mSendFragment = SendFragment.newInstance();
+        mReceiveFragment = ReceiveFragment.newInstance();
 
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -54,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
             mManager.publish(topic, message);
     }
 
+    public void updateSendStatus() {
+        mSendFragment.updateStatus();
+    }
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         SectionsPagerAdapter(FragmentManager fm) {
@@ -64,9 +74,9 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return SendFragment.newInstance();
+                    return mSendFragment;
                 case 1:
-                    return ReceiveFragment.newInstance();
+                    return mReceiveFragment;
                 default:
                     throw new UnsupportedOperationException("Error position " + position);
             }
