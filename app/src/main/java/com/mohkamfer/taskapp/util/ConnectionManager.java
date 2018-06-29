@@ -19,12 +19,14 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import static android.content.Context.CONNECTIVITY_SERVICE;
+
 public class ConnectionManager {
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            handleConnectivity(intent);
+            handleConnectivity();
         }
     };
 
@@ -38,31 +40,33 @@ public class ConnectionManager {
         this.context = context;
         parentView = ((MainActivity) context).findViewById(R.id.main_content);
 
-        context.registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        context.registerReceiver(receiver,
+                new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
 
         snackbar = Snackbar.make(parentView, "Connecting...", Snackbar.LENGTH_INDEFINITE);
 
         String clientId = MqttClient.generateClientId();
         client = new MqttAndroidClient(context, context.getString(R.string.cloudURI), clientId);
 
-        connectClient();
+        handleConnectivity();
     }
 
-    private void handleConnectivity(Intent intent) {
-        if (intent != null) {
-            ConnectivityManager manager = (ConnectivityManager)
-                    context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (manager != null) {
-                NetworkInfo info = manager.getActiveNetworkInfo();
-                if (info != null) {
-                    System.out.println("Received something!");
-                    if (info.isConnectedOrConnecting())
-                        connectClient();
-                    else
-                        disconnected();
-                }
-            }
+    synchronized public boolean online() {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = null;
+        if (cm != null) {
+            netInfo = cm.getActiveNetworkInfo();
         }
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    private void handleConnectivity() {
+        System.out.println("Received something!");
+        if (online())
+            connectClient();
+        else
+            disconnected();
     }
 
     private void connecting() {
@@ -92,7 +96,7 @@ public class ConnectionManager {
                 .setAction("Try Again", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        System.out.println("Clicked!");
+                        handleConnectivity();
                     }
                 });
         showSnackbar();
@@ -106,7 +110,8 @@ public class ConnectionManager {
     public void onDestroy() {
         context.unregisterReceiver(receiver);
 
-        disconnectClient();
+        if (connected)
+            disconnectClient();
     }
 
     public void connectClient() {
@@ -156,8 +161,11 @@ public class ConnectionManager {
                 }
             });
 
-            client.unregisterResources();
-            client.close();
+            if (connected) {
+                client.unregisterResources();
+                client.close();
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
