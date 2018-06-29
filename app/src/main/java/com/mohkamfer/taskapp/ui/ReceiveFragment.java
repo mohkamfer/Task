@@ -20,7 +20,7 @@ public class ReceiveFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_send, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_receive, container, false);
         return rootView;
     }
 }

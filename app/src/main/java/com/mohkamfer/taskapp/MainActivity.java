@@ -49,6 +49,11 @@ public class MainActivity extends AppCompatActivity {
         mManager.onDestroy();
     }
 
+    public void publishMessage(String topic, String message) {
+        if (mManager.isConnected())
+            mManager.publish(topic, message);
+    }
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         SectionsPagerAdapter(FragmentManager fm) {

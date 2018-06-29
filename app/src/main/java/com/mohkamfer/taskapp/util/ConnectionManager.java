@@ -17,6 +17,7 @@ import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 public class ConnectionManager {
 
@@ -55,13 +56,12 @@ public class ConnectionManager {
                 NetworkInfo info = manager.getActiveNetworkInfo();
                 if (info != null) {
                     System.out.println("Received something!");
-                    if (info.isConnected())
-                        connected();
+                    if (info.isConnectedOrConnecting())
+                        connectClient();
                     else
                         disconnected();
                 }
-            } else
-                System.out.println("Freaking null...");
+            }
         }
     }
 
@@ -158,6 +158,17 @@ public class ConnectionManager {
 
             client.unregisterResources();
             client.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void publish(String topic, String payload) {
+        byte[] encodedPayload;
+        try {
+            encodedPayload = payload.getBytes("UTF-8");
+            MqttMessage message = new MqttMessage(encodedPayload);
+            client.publish(topic, message);
         } catch (Exception e) {
             e.printStackTrace();
         }
