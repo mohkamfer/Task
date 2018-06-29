@@ -2,4 +2,7 @@
     <string name="app_name">TaskApp</string>
     <string name="tab_send">Send</string>
     <string name="tab_receive">Receive</string>
+    <string name="cloudURI">tcp://m11.cloudmqtt.com:12365</string>
+    <string name="username">pgefxfdc</string>
+    <string name="password">AB87OpGbxpP2</string>
 </resources>

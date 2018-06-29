@@ -9,12 +9,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.mohkamfer.taskapp.ui.ReceiveFragment;
 import com.mohkamfer.taskapp.ui.SendFragment;
+import com.mohkamfer.taskapp.util.ConnectionManager;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +20,8 @@ public class MainActivity extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     private ViewPager mViewPager;
+
+    private ConnectionManager mManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +39,14 @@ public class MainActivity extends AppCompatActivity {
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+
+        mManager = new ConnectionManager(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mManager.onDestroy();
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
