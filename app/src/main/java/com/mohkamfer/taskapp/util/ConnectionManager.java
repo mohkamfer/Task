@@ -16,6 +16,7 @@ import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -37,6 +38,8 @@ public class ConnectionManager {
     private View parentView;
     private MqttAndroidClient client;
 
+    private long last = System.currentTimeMillis();
+
     public ConnectionManager(Context context) {
         this.context = context;
         parentView = ((MainActivity) context).findViewById(R.id.main_content);
@@ -48,11 +51,33 @@ public class ConnectionManager {
 
         String clientId = MqttClient.generateClientId();
         client = new MqttAndroidClient(context, context.getString(R.string.cloudURI), clientId);
+        client.setCallback(new MqttCallback() {
+            @Override
+            public void connectionLost(Throwable cause) {
+                disconnected();
+            }
+
+            @SuppressWarnings("RedundantThrows")
+            @Override
+            public void messageArrived(String topic, MqttMessage message) throws Exception {
+                if (System.currentTimeMillis() - last > 200) {
+                    if (topic.equals("xiot/listen")) {
+                        appendReceive(message.toString());
+                    }
+                }
+                last = System.currentTimeMillis();
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken token) {
+                ((MainActivity) ConnectionManager.this.context).updateSendStatus();
+            }
+        });
 
         handleConnectivity();
     }
 
-    synchronized public boolean online() {
+    public boolean online() {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = null;
@@ -133,6 +158,7 @@ public class ConnectionManager {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     connected();
+                    subscribe("xiot/listen");
                 }
 
                 @Override
@@ -175,17 +201,20 @@ public class ConnectionManager {
         try {
             encodedPayload = payload.getBytes("UTF-8");
             MqttMessage message = new MqttMessage(encodedPayload);
-            IMqttDeliveryToken deliveryToken = client.publish(topic, message);
-            deliveryToken.setActionCallback(new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    ((MainActivity) context).updateSendStatus();
-                }
+            client.publish(topic, message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                }
-            });
+    private void appendReceive(String message) {
+        ((MainActivity) context).appendToBody(message);
+    }
+
+    public void subscribe(String topic) {
+        int qos = 1;
+        try {
+            client.subscribe(topic, qos);
         } catch (Exception e) {
             e.printStackTrace();
         }

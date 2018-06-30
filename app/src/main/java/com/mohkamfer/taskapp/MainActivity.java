@@ -64,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
         mSendFragment.updateStatus();
     }
 
+    public void appendToBody(String message) {
+        mReceiveFragment.append(message);
+    }
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         SectionsPagerAdapter(FragmentManager fm) {
