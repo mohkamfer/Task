@@ -1,3 +1,5 @@
+Programming Language Choice
+--------------------------
 I picked the Java programming language for Android because I've been writing with it for years so far and it feels very comfortable when I know a lot about the language I am using. Also my choice was very limited to Java and Kotlin, and I lack basic knowledge about the latter so I'm only left with Java as an option really!
 
 Goal of the project
