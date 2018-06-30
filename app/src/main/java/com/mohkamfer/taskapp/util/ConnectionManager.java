@@ -45,7 +45,7 @@ public class ConnectionManager {
         parentView = ((MainActivity) context).findViewById(R.id.main_content);
 
         context.registerReceiver(receiver,
-                new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+                new IntentFilter(context.getString(R.string.CONNECTIVITY_CHANGE)));
 
         snackbar = Snackbar.make(parentView, "Connecting...", Snackbar.LENGTH_INDEFINITE);
 
@@ -61,7 +61,7 @@ public class ConnectionManager {
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 if (System.currentTimeMillis() - last > 200) {
-                    if (topic.equals("xiot/listen")) {
+                    if (topic.equals(ConnectionManager.this.context.getString(R.string.user_topic))) {
                         appendReceive(message.toString());
                     }
                 }
@@ -77,7 +77,7 @@ public class ConnectionManager {
         handleConnectivity();
     }
 
-    public boolean online() {
+    private boolean online() {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = null;
@@ -139,7 +139,7 @@ public class ConnectionManager {
             disconnectClient();
     }
 
-    public void connectClient() {
+    private void connectClient() {
         if (context == null)
             return;
 
@@ -158,7 +158,7 @@ public class ConnectionManager {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     connected();
-                    subscribe("xiot/listen");
+                    subscribe(context.getString(R.string.user_topic));
                 }
 
                 @Override
@@ -171,7 +171,7 @@ public class ConnectionManager {
         }
     }
 
-    public void disconnectClient() {
+    private void disconnectClient() {
         try {
             IMqttToken disconToken = client.disconnect();
             disconToken.setActionCallback(new IMqttActionListener() {
@@ -211,7 +211,8 @@ public class ConnectionManager {
         ((MainActivity) context).appendToBody(message);
     }
 
-    public void subscribe(String topic) {
+    @SuppressWarnings("SameParameterValue")
+    private void subscribe(String topic) {
         int qos = 1;
         try {
             client.subscribe(topic, qos);

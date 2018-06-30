@@ -24,6 +24,7 @@ public class ReceiveFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_receive, container, false);
+        ((TextView) rootView.findViewById(R.id.receive_label)).setText(getString(R.string.receive_label, getString(R.string.user_topic)));
         mBody = rootView.findViewById(R.id.receive_body);
         return rootView;
     }

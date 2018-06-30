@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">TaskApp</string>
     <string name="cloudURI">tcp://m11.cloudmqtt.com:12365</string>
     <string name="username">pgefxfdc</string>
     <string name="password">AB87OpGbxpP2</string>
+    <string name="user_topic">xiot/listen</string>
+    <string name="app_name">TaskApp</string>
     <string name="send">Send</string>
     <string name="receive">Receive</string>
     <string name="message_hint">Message</string>
@@ -10,4 +11,6 @@
     <string name="send_hello">Send Hello</string>
     <string name="send_bye">Send Bye</string>
     <string name="message_sent">Message sent!</string>
+    <string name="receive_label">Listening to %1$s</string>
+    <string name="CONNECTIVITY_CHANGE">android.net.conn.CONNECTIVITY_CHANGE</string>
 </resources>
