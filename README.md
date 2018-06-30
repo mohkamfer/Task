@@ -2,7 +2,7 @@ Introduction
 ------------
 A simple application to send and receive messages over the MQTT protocol. The application makes use of Eclipse's Paho plugin for Android.
 
-Usage:
+Usage
 -------
 
 To set up the application, head to res/values/strings.xml and edit the following:
@@ -20,7 +20,7 @@ For testing, https://www.cloudmqtt.com/ was used
 Use "Login" and register or login using one of the supported methods.
 
 
-Issues with the application:
+Issues with the application
 ----------------------------
 
 The infamous fragment lifecycle rotation issues
